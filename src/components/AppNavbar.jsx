@@ -17,8 +17,8 @@ export default function AppNavbar() {
     return (<>
         <header style={{ backgroundColor: 'red' }}>
             <nav>
-                {menu.map(curlink =>
-                    <NavLink to={curlink.path}>
+                {menu.map((curlink, i) =>
+                    <NavLink key={i} to={curlink.path}>
                         {curlink.name}
                     </NavLink>)}
             </nav>
