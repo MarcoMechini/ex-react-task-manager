@@ -5,7 +5,7 @@ const TaskRow = memo(({ props }) => {
 
     return (
         <tr>
-            <td onClick={() => navigate(`/task/${props.id}`)}>{props.title}</td>
+            <td onClick={() => navigate(`/task/${props.id}`)} style={{ cursor: 'pointer' }}>{props.title}</td>
             <td style={{
                 backgroundColor: (props.status === 'Done')
                     ? 'green' : (props.status === 'Doing') ? 'yellow' : 'red'

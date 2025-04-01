@@ -1,25 +1,26 @@
-import { useParams } from "react-router-dom"
-import { useGlobalContext } from "../context/GlobalContext"
-import { useEffect, useMemo, useState } from "react"
-
+import { useParams, useNavigate } from "react-router-dom";
+import { useGlobalContext } from "../context/GlobalContext";
+import { useEffect, useMemo, useState } from "react";
 
 export default function TaskDetail() {
-    const { id } = useParams()
-    const { tasks, removeTask } = useGlobalContext()
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const { tasks, removeTask } = useGlobalContext();
 
-    const [task, setTask] = useState({})
+    const [task, setTask] = useState({});
 
     useEffect(() => {
-        console.log('tasks', tasks);
-        console.log(id);
-
         tasks.map(t => {
             if (t.id === parseInt(id)) {
-                setTask(t)
+                setTask(t);
             }
-        })
-    }, [id])
+        });
+    }, [id]);
 
+    const handleRemoveTask = () => {
+        removeTask(id);
+        navigate('/');
+    };
 
     return (
         <>
@@ -28,7 +29,7 @@ export default function TaskDetail() {
             <div>{task.description}</div>
             <div>{task.status}</div>
             <div>{task.createdAt}</div>
-            <button onClick={() => removeTask(id)}>Elimina Task</button>
+            <button onClick={handleRemoveTask}>Elimina Task</button>
         </>
-    )
+    );
 }

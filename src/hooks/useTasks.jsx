@@ -10,19 +10,18 @@ async function fetchData(apiUrl) {
 }
 
 export default function useTask() {
-
-    const [tasks, setTasks] = useState([])
+    const [tasks, setTasks] = useState([]);
 
     useEffect(() => {
         (async () => {
             try {
-                const reponse = await fetchData(`${api}/tasks`)
-                setTasks(reponse)
+                const reponse = await fetchData(`${api}/tasks`);
+                setTasks(reponse);
             } catch (error) {
                 console.error(error.message);
             }
-        })()
-    }, [])
+        })();
+    }, []);
 
     async function addTask(title, description, status) {
 
@@ -53,22 +52,23 @@ export default function useTask() {
             alert(error);
         }
     }
-    async function removeTask(id) {
 
+    async function removeTask(id) {
         try {
-            const fetchData = await fetch(`${api}/tasks/${id}`, { method: 'DELETE' })
-            const jsonData = await fetchData.json()
+            const fetchData = await fetch(`${api}/tasks/${id}`, { method: 'DELETE' });
+            const jsonData = await fetchData.json();
             if (!jsonData.success) {
                 throw new Error(fetchData.status);
             }
-            setTasks(tasks.filter(t => t.id !== id))
-
+            setTasks(tasks.filter(t => t.id !== id));
+            alert('Task eliminato correttamente');
         } catch (error) {
             console.log('errore', error);
             alert(error);
         }
     }
+
     function updateTask() { }
 
-    return [tasks, addTask, removeTask, updateTask]
+    return [tasks, addTask, removeTask, updateTask];
 }
