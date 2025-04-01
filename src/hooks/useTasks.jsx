@@ -15,12 +15,44 @@ export default function useTask() {
 
     useEffect(() => {
         (async () => {
-            const reponse = await fetchData(`${api}/tasks`)
-            setTasks(reponse)
+            try {
+                const reponse = await fetchData(`${api}/tasks`)
+                setTasks(reponse)
+            } catch (error) {
+                console.error(error.message);
+            }
         })()
     }, [])
 
-    function addTask() { }
+    async function addTask(title, description, status) {
+
+        //creo un oggetto dove passo il tipo di chiamata da effettuare l'headers per sapere cosa aspettarsi e l'oggetto che voglio passare dopo averlo trasformato in una stringa
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title,
+                description,
+                status
+            }),
+        };
+
+        try {
+            const fetchData = await fetch(`${api}/tasks`, options)
+            if (!fetchData.ok) {
+                throw new Error(fetchData.status);
+            }
+            const jsonData = await fetchData.json()
+            alert('salvataggio effettuato')
+            return jsonData
+
+        } catch (error) {
+            console.log('errore', error);
+            alert(error);
+        }
+    }
     function removeTask() { }
     function updateTask() { }
 
