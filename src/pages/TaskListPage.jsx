@@ -1,9 +1,12 @@
-import TaskRow from "../components/TaskRow"
-import { useGlobalContext } from "../context/GlobalContext"
+import TaskRow from "../components/TaskRow";
+import { useGlobalContext } from "../context/GlobalContext";
 
 export default function TaskListPage() {
+    const { tasks } = useGlobalContext();
 
-    const { tasks } = useGlobalContext()
+    if (!tasks) {
+        return <div>Caricamento...</div>; // Gestione del caricamento o errore
+    }
 
     return (
         <>
@@ -22,5 +25,5 @@ export default function TaskListPage() {
                 </tbody>
             </table>
         </>
-    )
+    );
 }
