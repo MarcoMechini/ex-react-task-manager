@@ -9,9 +9,6 @@ function GlobalProvider({ children }) {
 
     const [tasks, addTask, removeTask, updateTask] = useTask()
 
-    // useEffect(() => {
-    // }, [])
-
     const globalProviderValue = {
         tasks, addTask, removeTask, updateTask
     }

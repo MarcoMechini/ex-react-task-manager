@@ -1,7 +1,9 @@
 import { useMemo, useRef, useState } from "react"
+import { useGlobalContext } from "../context/GlobalContext"
 
 export default function AddTaskPage() {
 
+    const { addTask } = useGlobalContext()
     const [input, setInput] = useState('')
     const descriptionRef = useRef('')
     const statusRef = useRef('')
@@ -10,23 +12,29 @@ export default function AddTaskPage() {
 
     const checkInput = useMemo(() => {
         if (input === '') {
-            console.log('input non valido');
+            return false
         } else {
-            [...input].forEach(i => {
+            [...input].some(i => {
                 if (symbols.includes(i)) {
-                    console.log('input non valido');
+                    return false
                 }
             })
         }
+        return true
     }, [input])
 
+    const handleSubmit = e => {
+        e.preventDefault();
 
+        if (checkInput) {
+            addTask(input, descriptionRef.current?.value, statusRef.current?.value)
+        }
 
-    //validazione con useMemo() 
-    // MILESTONE 5.2
+    }
+
     return (
         <>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <label htmlFor="">Nome Task</label>
                 <input value={input} onChange={(e) => setInput(e.target.value)} />
                 <label htmlFor="">Descrizione</label>
@@ -36,6 +44,7 @@ export default function AddTaskPage() {
                     <option value={"Doing"}>Doing</option>
                     <option value={"Done"}>Done</option>
                 </select>
+                <button type="submit">Aggiungi Task</button>
             </form>
         </>
     )
