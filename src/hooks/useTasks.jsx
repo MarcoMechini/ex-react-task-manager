@@ -53,7 +53,21 @@ export default function useTask() {
             alert(error);
         }
     }
-    function removeTask() { }
+    async function removeTask(id) {
+
+        try {
+            const fetchData = await fetch(`${api}/tasks/${id}`, { method: 'DELETE' })
+            const jsonData = await fetchData.json()
+            if (!jsonData.success) {
+                throw new Error(fetchData.status);
+            }
+            setTasks(tasks.filter(t => t.id !== id))
+
+        } catch (error) {
+            console.log('errore', error);
+            alert(error);
+        }
+    }
     function updateTask() { }
 
     return [tasks, addTask, removeTask, updateTask]
