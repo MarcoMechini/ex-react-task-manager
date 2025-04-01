@@ -4,7 +4,6 @@ import { useGlobalContext } from "../context/GlobalContext"
 export default function TaskListPage() {
 
     const { tasks } = useGlobalContext()
-    console.log(tasks);
 
     return (
         <>
