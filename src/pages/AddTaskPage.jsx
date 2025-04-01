@@ -28,6 +28,9 @@ export default function AddTaskPage() {
 
         if (checkInput) {
             addTask(input, descriptionRef.current?.value, statusRef.current?.value)
+            setInput('')
+            descriptionRef.current.value = ''
+            statusRef.current.value = 'To do'
         }
 
     }
