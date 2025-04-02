@@ -21,7 +21,7 @@ export default function useTask() {
                 console.error(error.message);
             }
         })();
-    }, []);
+    }, [tasks]);
 
     async function addTask(title, description, status) {
 
@@ -60,7 +60,6 @@ export default function useTask() {
             if (!jsonData.success) {
                 throw new Error(fetchData.status);
             }
-            setTasks(tasks.filter(t => t.id !== id));
             alert('Task eliminato correttamente');
         } catch (error) {
             console.log('errore', error);
