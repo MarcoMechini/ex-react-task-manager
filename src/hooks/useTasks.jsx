@@ -11,7 +11,11 @@ async function fetchData(apiUrl) {
 
 export default function useTask() {
     const [tasks, setTasks] = useState([]);
+    const [flag, setFlag] = useState(false);
 
+    const flagToggle = () => {
+        setFlag(!flag)
+    }
 
     useEffect(() => {
         (async () => {
@@ -22,7 +26,7 @@ export default function useTask() {
                 console.error(error.message);
             }
         })();
-    }, []);
+    }, [flag]);
 
     async function addTask(title, description, status) {
 
@@ -46,6 +50,7 @@ export default function useTask() {
             }
             const jsonData = await fetchData.json()
             alert('salvataggio effettuato')
+            flagToggle()
             return jsonData
 
         } catch (error) {
@@ -61,6 +66,7 @@ export default function useTask() {
             if (!jsonData.success) {
                 throw new Error(fetchData.status);
             }
+            flagToggle()
             alert('Task eliminato correttamente');
         } catch (error) {
             console.log('errore', error);
@@ -88,6 +94,7 @@ export default function useTask() {
                 throw new Error(fetchData.status);
             }
 
+            flagToggle()
             alert('Task modificato correttamente');
             //modifica la task nello stato globale            
         } catch (error) {
