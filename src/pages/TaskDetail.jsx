@@ -2,14 +2,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../context/GlobalContext";
 import { useEffect, useMemo, useState } from "react";
 import Modal from "../components/Modal";
+import EditTaskModal from "../components/EditTaskModal";
 
 export default function TaskDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { tasks, removeTask } = useGlobalContext();
+    const { tasks, removeTask, updateTask } = useGlobalContext();
 
     const [task, setTask] = useState({});
-    const [show, setShow] = useState(false);
+    const [showDelete, setShowDelete] = useState(false);
+    const [showUpdate, setShowUpdate] = useState(false);
 
     useEffect(() => {
         tasks.map(t => {
@@ -23,22 +25,32 @@ export default function TaskDetail() {
         removeTask(id);
         navigate('/');
     };
+    const handleUpdateTask = (formData) => {
+        updateTask(formData, id);
+        setShowUpdate(false)
+    };
 
     return (
         <>
-            <button onClick={() => console.log(task)}>aaaaaaaaa</button>
             <div>{task.title}</div>
             <div>{task.description}</div>
             <div>{task.status}</div>
             <div>{task.createdAt}</div>
-            <button onClick={() => setShow(true)}>Elimina Task</button>
+            <button onClick={() => setShowDelete(true)}>Elimina Task</button>
+            <button onClick={() => setShowUpdate(true)}>Modifica Task</button>
             <Modal
                 title={task.title}
                 content={task.content}
-                show={show}
-                onClose={() => setShow(false)}
+                show={showDelete}
+                onClose={() => setShowDelete(false)}
                 onConfirm={handleRemoveTask}
                 confirmText='Elimina Task' />
+            <EditTaskModal
+                show={showUpdate}
+                onClose={() => { setShowUpdate(false) }}
+                task={task}
+                onSave={handleUpdateTask}
+            />
         </>
     );
 }

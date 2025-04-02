@@ -12,6 +12,7 @@ async function fetchData(apiUrl) {
 export default function useTask() {
     const [tasks, setTasks] = useState([]);
 
+
     useEffect(() => {
         (async () => {
             try {
@@ -21,7 +22,7 @@ export default function useTask() {
                 console.error(error.message);
             }
         })();
-    }, [tasks]);
+    }, []);
 
     async function addTask(title, description, status) {
 
@@ -67,7 +68,33 @@ export default function useTask() {
         }
     }
 
-    function updateTask() { }
+    async function updateTask(form, id) {
+
+
+        const requestOption = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: form.title,
+                description: form.description,
+                status: form.status
+            }),
+        }
+
+        try {
+            const fetchData = await fetch(`${api}/tasks/${id}`, requestOption);
+            const jsonData = await fetchData.json();
+            if (!jsonData.success) {
+                throw new Error(fetchData.status);
+            }
+
+            alert('Task modificato correttamente');
+            //modifica la task nello stato globale            
+        } catch (error) {
+            console.log('errore', error);
+            alert(error);
+        }
+    }
 
     return [tasks, addTask, removeTask, updateTask];
 }
