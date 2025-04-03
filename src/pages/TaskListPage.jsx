@@ -1,103 +1,109 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import TaskRow from "../components/TaskRow";
 import { useGlobalContext } from "../context/GlobalContext";
-import { useCallback } from "react";
 
 export default function TaskListPage() {
     const { tasks } = useGlobalContext();
+    const searchQuery = useRef('');
+    // Stato per memorizzare il valore di ricerca con debounce
+    const [debouncedQuery, setDebouncedQuery] = useState('');
+    const [sortBy, setSortBy] = useState('createdAt');
+    const [sortOrder, setSortOrder] = useState(1);
 
-    const [searchQuery, setSearchQuery] = useState('')
-    const [sortBy, setSortBy] = useState('createdAt')
-    const [sortOrder, setSortOrder] = useState(1)
-
-    const handleSort = e => {
+    const handleSort = (e) => {
         const currOrder = e.target.dataset.value;
         if (sortBy === currOrder) {
-            setSortOrder(!sortOrder)
+            setSortOrder(sortOrder * -1);
         } else {
-            setSortBy(currOrder)
-            setSortOrder(1)
+            setSortBy(currOrder);
+            setSortOrder(1);
         }
-    }
+    };
 
-    function debounce(callback, delay) {
+    // Funzione debounce: ritarda l'esecuzione della callback fino a quando
+    // non è trascorso il tempo specificato dall'ultima chiamata
+    const debounce = (callback, delay) => {
         let timer;
         return (value) => {
             clearTimeout(timer);
             timer = setTimeout(() => {
-                callback(value)
-            }, delay)
-        }
-    }
+                callback(value);
+            }, delay);
+        };
+    };
 
+    // Memoizza la funzione debounce per evitare di ricrearla ad ogni render
+    const handleDebounce = useCallback(
+        debounce((query) => {
+            setDebouncedQuery(query);
+        }, 500),
+        []
+    );
 
-
+    // Effetto per aggiornare il valore di ricerca con debounce
+    useEffect(() => {
+        handleDebounce(searchQuery.current.value);
+    }, [searchQuery.current.value, handleDebounce]);
 
     const orderedTask = useMemo(() => {
-        // Cloniamo l'array per non mutare quello originale
         let result = [...tasks];
 
-
-        // Filtro per la search query (case insensitive)
-
-        if (searchQuery) {
-            result = result.filter(t =>
-                t.title.toLowerCase().includes(searchQuery.toLowerCase())
+        // Filtra le attività in base alla query di ricerca (case insensitive)
+        if (debouncedQuery) {
+            result = result.filter((t) =>
+                t.title.toLowerCase().includes(debouncedQuery.toLowerCase())
             );
         }
 
-
-        // Ordinamento in base al sortBy e sortOrder
-        if (sortBy === 'title') {
+        if (sortBy === "title") {
             result.sort((a, b) =>
-                sortOrder
+                sortOrder === 1
                     ? a.title.localeCompare(b.title)
                     : b.title.localeCompare(a.title)
             );
-        } else if (sortBy === 'status') {
-            const option = {
-                'To do': 0,
-                'Doing': 1,
-                'Done': 2
-            };
-
+        } else if (sortBy === "status") {
+            const statusOrder = { "To do": 0, Doing: 1, Done: 2 };
             result.sort((a, b) =>
-                sortOrder
-                    ? option[a.status] - option[b.status]
-                    : option[b.status] - option[a.status]
+                sortOrder === 1
+                    ? statusOrder[a.status] - statusOrder[b.status]
+                    : statusOrder[b.status] - statusOrder[a.status]
             );
-        } else if (sortBy === 'createdAt') {
+        } else if (sortBy === "createdAt") {
             result.sort((a, b) =>
-                sortOrder
-                    ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-                    : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                sortOrder === 1
+                    ? new Date(a.createdAt) - new Date(b.createdAt)
+                    : new Date(b.createdAt) - new Date(a.createdAt)
             );
         }
 
         return result;
-    }, [tasks, sortBy, sortOrder, searchQuery]);
-
+    }, [tasks, sortBy, sortOrder, debouncedQuery]);
 
     if (!tasks) {
-        return <div>Caricamento...</div>; // Gestione del caricamento o errore
+        return <div>Caricamento...</div>;
     }
 
     return (
         <>
+            <input
+                type="text"
+                ref={searchQuery}
+                placeholder="Cerca per titolo..."
+                onChange={() => handleDebounce(searchQuery.current.value)}
+            />
 
-            <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
             <table>
                 <thead>
                     <tr>
-                        <th data-value='title' onClick={handleSort}>Nome</th>
-                        <th data-value='status' onClick={handleSort}>Stato</th>
-                        <th data-value='createdAt' onClick={handleSort}>Data di creazione</th>
+                        <th data-value="title" onClick={handleSort}>Nome</th>
+                        <th data-value="status" onClick={handleSort}>Stato</th>
+                        <th data-value="createdAt" onClick={handleSort}>Data di creazione</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {orderedTask.map(t =>
-                        <TaskRow key={t.id} props={t}></TaskRow>
-                    )}
+                    {orderedTask.map((t) => (
+                        <TaskRow key={t.id} props={t} />
+                    ))}
                 </tbody>
             </table>
         </>
