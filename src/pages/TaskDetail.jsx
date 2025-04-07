@@ -21,12 +21,21 @@ export default function TaskDetail() {
         });
     }, [id]);
 
-    const handleRemoveTask = () => {
-        removeTask(id);
-        navigate('/');
+    const handleRemoveTask = async () => {
+        try {
+            await removeTask(parseInt(id));
+            alert('Task eliminato correttamente');
+            navigate("/");
+
+        } catch (error) {
+            console.error(error);
+            alert(error.message)
+
+        }
     };
-    const handleUpdateTask = (formData) => {
-        updateTask(formData, id);
+    const handleUpdateTask = async (formData) => {
+        await updateTask(formData, id);
+        alert('Task modificato correttamente');
         setShowUpdate(false)
     };
 

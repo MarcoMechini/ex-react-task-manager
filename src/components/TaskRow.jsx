@@ -1,11 +1,12 @@
 import { memo, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 const TaskRow = memo(({ props }) => {
     const navigate = useNavigate()
 
     return (
         <tr>
-            <td onClick={() => navigate(`/task/${props.id}`)} style={{ cursor: 'pointer' }}>{props.title}</td>
+            {/* <td onClick={() => navigate(`/task/${props.id}`)} style={{ cursor: 'pointer' }}>{props.title}</td> */}
+            <td><Link to={`/task/${props.id}`}>{props.title}</Link></td>
             <td style={{
                 backgroundColor: (props.status === 'Done')
                     ? 'green' : (props.status === 'Doing') ? 'yellow' : 'red'

@@ -2,6 +2,18 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import TaskRow from "../components/TaskRow";
 import { useGlobalContext } from "../context/GlobalContext";
 
+// Funzione debounce: ritarda l'esecuzione della callback fino a quando
+// non è trascorso il tempo specificato dall'ultima chiamata
+const debounce = (callback, delay) => {
+    let timer;
+    return (value) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            callback(value);
+        }, delay);
+    };
+};
+
 export default function TaskListPage() {
     const { tasks } = useGlobalContext();
     const searchQuery = useRef('');
@@ -20,17 +32,6 @@ export default function TaskListPage() {
         }
     };
 
-    // Funzione debounce: ritarda l'esecuzione della callback fino a quando
-    // non è trascorso il tempo specificato dall'ultima chiamata
-    const debounce = (callback, delay) => {
-        let timer;
-        return (value) => {
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                callback(value);
-            }, delay);
-        };
-    };
 
     // Memoizza la funzione debounce per evitare di ricrearla ad ogni render
     const handleDebounce = useCallback(
@@ -62,7 +63,7 @@ export default function TaskListPage() {
                     : b.title.localeCompare(a.title)
             );
         } else if (sortBy === "status") {
-            const statusOrder = { "To do": 0, Doing: 1, Done: 2 };
+            const statusOrder = { "To do": 0, "Doing": 1, "Done": 2 };
             result.sort((a, b) =>
                 sortOrder === 1
                     ? statusOrder[a.status] - statusOrder[b.status]

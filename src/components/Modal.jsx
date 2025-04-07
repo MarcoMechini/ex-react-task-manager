@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom"
 
-export default function Modal({ title, content, show, onClose, onConfirm, confirmText }) {
+export default function Modal({ title, content, show, onClose, onConfirm, confirmText = "Conferma" }) {
     if (!show) return null;
 
     return ReactDOM.createPortal(

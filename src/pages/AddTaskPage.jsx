@@ -11,22 +11,17 @@ export default function AddTaskPage() {
     const symbols = "!@#$%^&*()-_=+[]{}|;:',\".<>?/`~";
 
     const checkInput = useMemo(() => {
-        if (input === '') {
-            return false
-        } else {
-            [...input].some(i => {
-                if (symbols.includes(i)) {
-                    return false
-                }
-            })
-        }
-        return true
+        if (input.trim() === '')
+            return "Il nome della task non può essere vuoto."
+        if ([...input].some(i => symbols.includes(i)))
+            return "Il nome della task non può contenere simboli."
+        return ''
     }, [input])
 
     const handleSubmit = e => {
         e.preventDefault();
 
-        if (checkInput) {
+        if (!checkInput) {
             addTask(input, descriptionRef.current?.value, statusRef.current?.value)
             setInput('')
             descriptionRef.current.value = ''
@@ -40,6 +35,7 @@ export default function AddTaskPage() {
             <form onSubmit={handleSubmit}>
                 <label htmlFor="">Nome Task</label>
                 <input value={input} onChange={(e) => setInput(e.target.value)} />
+                {checkInput && <p style={{ color: 'red' }}>{checkInput}</p>}
                 <label htmlFor="">Descrizione</label>
                 <input ref={descriptionRef} />
                 <select ref={statusRef}>

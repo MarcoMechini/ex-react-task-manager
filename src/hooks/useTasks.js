@@ -11,11 +11,6 @@ async function fetchData(apiUrl) {
 
 export default function useTask() {
     const [tasks, setTasks] = useState([]);
-    const [flag, setFlag] = useState(false);
-
-    const flagToggle = () => {
-        setFlag(!flag)
-    }
 
     useEffect(() => {
         (async () => {
@@ -26,7 +21,7 @@ export default function useTask() {
                 console.error(error.message);
             }
         })();
-    }, [flag]);
+    }, []);
 
     async function addTask(title, description, status) {
 
@@ -45,14 +40,12 @@ export default function useTask() {
 
         try {
             const fetchData = await fetch(`${api}/tasks`, options)
-            if (!fetchData.ok) {
-                throw new Error(fetchData.status);
-            }
             const jsonData = await fetchData.json()
+            if (!jsonData.success) {
+                throw new Error(jsonData.message);
+            }
             alert('salvataggio effettuato')
-            flagToggle()
-            return jsonData
-
+            setTasks(prev => [...prev, jsonData.task])
         } catch (error) {
             console.log('errore', error);
             alert(error);
@@ -60,18 +53,12 @@ export default function useTask() {
     }
 
     async function removeTask(id) {
-        try {
-            const fetchData = await fetch(`${api}/tasks/${id}`, { method: 'DELETE' });
-            const jsonData = await fetchData.json();
-            if (!jsonData.success) {
-                throw new Error(fetchData.status);
-            }
-            flagToggle()
-            alert('Task eliminato correttamente');
-        } catch (error) {
-            console.log('errore', error);
-            alert(error);
+        const fetchData = await fetch(`${api}/tasks/${id}`, { method: 'DELETE' });
+        const jsonData = await fetchData.json();
+        if (!jsonData.success) {
+            throw new Error(jsonData.message);
         }
+        setTasks(prev => prev.filter(p => p.id !== id))
     }
 
     async function updateTask(form, id) {
@@ -93,10 +80,8 @@ export default function useTask() {
             if (!jsonData.success) {
                 throw new Error(fetchData.status);
             }
+            setTasks(prev => prev.map(p => p.id === jsonData.task.id ? jsonData.task : p))
 
-            flagToggle()
-            alert('Task modificato correttamente');
-            //modifica la task nello stato globale            
         } catch (error) {
             console.log('errore', error);
             alert(error);
