@@ -61,6 +61,38 @@ export default function useTask() {
         setTasks(prev => prev.filter(p => p.id !== id))
     }
 
+    async function removeMultipleTasks(ids) {
+        const deleteRequests = ids.map(id =>
+            fetch(`${api}/tasks/${id}`, { method: 'DELETE' })
+                .then(res => res.json())
+        )
+
+        const results = await Prosime.allSettled(deleteRequests)
+
+        const fullfilledDeletions = [];
+        const rejectedDeletions = [];
+
+        results.forEach((result, index) => {
+            const taskId = ids[index];
+            if (result.status === "fulfilled" && result.value.success) {
+                fullfilledDeletions.push(taskId)
+            } else {
+                rejectedDeletions.push(taskId)
+            }
+        });
+
+        if (fullfilledDeletions.length > 0) {
+            setTasks(prev =>
+                prev.filter(t => !fullfilledDeletions.includes(t.id)))
+        }
+
+        if (rejectedDeletions.length > 0) {
+            throw new Error("Errore nell'eliminazione delle task con id: ", rejectedDeletions.join(", "));
+        }
+
+    }
+
+
     async function updateTask(form, id) {
 
 
@@ -88,5 +120,5 @@ export default function useTask() {
         }
     }
 
-    return [tasks, addTask, removeTask, updateTask];
+    return [tasks, addTask, removeTask, updateTask, removeMultipleTasks];
 }

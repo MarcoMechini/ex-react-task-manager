@@ -1,9 +1,7 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import TaskRow from "../components/TaskRow";
 import { useGlobalContext } from "../context/GlobalContext";
 
-// Funzione debounce: ritarda l'esecuzione della callback fino a quando
-// non è trascorso il tempo specificato dall'ultima chiamata
 const debounce = (callback, delay) => {
     let timer;
     return (value) => {
@@ -15,12 +13,28 @@ const debounce = (callback, delay) => {
 };
 
 export default function TaskListPage() {
-    const { tasks } = useGlobalContext();
-    const searchQuery = useRef('');
-    // Stato per memorizzare il valore di ricerca con debounce
-    const [debouncedQuery, setDebouncedQuery] = useState('');
+    const { tasks, removeMultipleTasks } = useGlobalContext();
+    const [searchQuery, setSearchQuery] = useState();
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState(1);
+    const [selectedTaskIds, setSelectedTaskIds] = useState([]);
+
+    const toggleSelection = taskId => {
+        setSelectedTaskIds(prev =>
+            prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId]
+        );
+    };
+
+    const handleDeleteSelected = async () => {
+        try {
+            await removeMultipleTasks(selectedTaskIds);
+            alert("Task eliminate con successo");
+            setSelectedTaskIds([]);
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        }
+    };
 
     const handleSort = (e) => {
         const currOrder = e.target.dataset.value;
@@ -32,27 +46,14 @@ export default function TaskListPage() {
         }
     };
 
-
-    // Memoizza la funzione debounce per evitare di ricrearla ad ogni render
-    const handleDebounce = useCallback(
-        debounce((query) => {
-            setDebouncedQuery(query);
-        }, 500),
-        []
-    );
-
-    // Effetto per aggiornare il valore di ricerca con debounce
-    useEffect(() => {
-        handleDebounce(searchQuery.current.value);
-    }, [searchQuery.current.value, handleDebounce]);
+    const handleDebounce = useCallback(debounce(setSearchQuery, 500), []);
 
     const orderedTask = useMemo(() => {
         let result = [...tasks];
 
-        // Filtra le attività in base alla query di ricerca (case insensitive)
-        if (debouncedQuery) {
+        if (searchQuery) {
             result = result.filter((t) =>
-                t.title.toLowerCase().includes(debouncedQuery.toLowerCase())
+                t.title.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
 
@@ -78,24 +79,31 @@ export default function TaskListPage() {
         }
 
         return result;
-    }, [tasks, sortBy, sortOrder, debouncedQuery]);
+    }, [tasks, sortBy, sortOrder, searchQuery]);
 
     if (!tasks) {
-        return <div>Caricamento...</div>;
+        return <div className="loading">Caricamento...</div>;
     }
 
     return (
-        <>
+        <div className="task-list-container">
             <input
+                className="search-input"
                 type="text"
-                ref={searchQuery}
                 placeholder="Cerca per titolo..."
-                onChange={() => handleDebounce(searchQuery.current.value)}
+                onChange={e => handleDebounce(e.target.value)}
             />
 
-            <table>
+            {selectedTaskIds.length > 0 && (
+                <button className="delete-button" onClick={handleDeleteSelected}>
+                    Elimina Selezionate
+                </button>
+            )}
+
+            <table className="task-table">
                 <thead>
                     <tr>
+                        <th></th>
                         <th data-value="title" onClick={handleSort}>Nome</th>
                         <th data-value="status" onClick={handleSort}>Stato</th>
                         <th data-value="createdAt" onClick={handleSort}>Data di creazione</th>
@@ -103,10 +111,15 @@ export default function TaskListPage() {
                 </thead>
                 <tbody>
                     {orderedTask.map((t) => (
-                        <TaskRow key={t.id} props={t} />
+                        <TaskRow
+                            key={t.id}
+                            props={t}
+                            checked={selectedTaskIds.includes(t.id)}
+                            onToggle={toggleSelection}
+                        />
                     ))}
                 </tbody>
             </table>
-        </>
+        </div>
     );
 }

@@ -4,22 +4,104 @@
   box-sizing: border-box;
 }
 
-table {
+/* NAVBAR */
+.app-navbar {
+  background-color: #1f2937;
+  /* grigio scuro */
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.app-navbar-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-link {
+  color: #d1d5db;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+  background-color: #374151;
+}
+
+.nav-link.active {
+  background-color: #4f46e5;
+  color: #ffffff;
+}
+
+
+/* TASKLISTPAGE */
+.task-list-container {
+  padding: 2rem;
+  max-width: 900px;
+  margin: auto;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.delete-button {
+  background-color: #dc2626;
+  /* rosso */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: #b91c1c;
+}
+
+.task-table {
   width: 100%;
   border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-th,
-td {
-  border: 1px solid black;
-  padding: 8px;
+.task-table th,
+.task-table td {
   text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-th {
-  background-color: #f2f2f2;
+.task-table th {
+  background-color: #f3f4f6;
   cursor: pointer;
+  user-select: none;
 }
+
+.task-table tr:hover {
+  background-color: #f9fafb;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  color: #555;
+}
+
 
 /* MODALE */
 /* Sfondo scuro trasparente per il modale */

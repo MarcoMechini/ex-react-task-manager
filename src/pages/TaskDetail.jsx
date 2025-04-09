@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../context/GlobalContext";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../components/Modal";
 import EditTaskModal from "../components/EditTaskModal";
 
@@ -44,7 +44,7 @@ export default function TaskDetail() {
             <div>{task.title}</div>
             <div>{task.description}</div>
             <div>{task.status}</div>
-            <div>{task.createdAt}</div>
+            <div>{new Date(task.createdAt).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' })}</div>
             <button onClick={() => setShowDelete(true)}>Elimina Task</button>
             <button onClick={() => setShowUpdate(true)}>Modifica Task</button>
             <Modal
