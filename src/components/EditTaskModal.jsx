@@ -43,7 +43,6 @@ export default function EditTaskModal({ show, onClose, task, onSave }) {
                         name="description"
                         value={formData.description}
                         onChange={handleInputChange}
-                        required
                     />
                     <label>Stato</label>
                     <select name="status" value={formData.status} onChange={handleInputChange}>

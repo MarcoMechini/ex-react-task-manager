@@ -85,6 +85,8 @@ export default function TaskListPage() {
         return <div className="loading">Caricamento...</div>;
     }
 
+    const arrow = (sortOrder === -1 ? 'D' : 'C');
+
     return (
         <div className="task-list-container">
             <input
@@ -104,9 +106,9 @@ export default function TaskListPage() {
                 <thead>
                     <tr>
                         <th></th>
-                        <th data-value="title" onClick={handleSort}>Nome</th>
-                        <th data-value="status" onClick={handleSort}>Stato</th>
-                        <th data-value="createdAt" onClick={handleSort}>Data di creazione</th>
+                        <th data-value="title" onClick={handleSort}>Nome {sortBy === 'title' ? arrow : ''}</th>
+                        <th data-value="status" onClick={handleSort}>Stato {sortBy === 'status' ? arrow : ''}</th>
+                        <th data-value="createdAt" onClick={handleSort}>Data di creazione {sortBy === 'createdAt' ? arrow : ''}</th>
                     </tr>
                 </thead>
                 <tbody>
